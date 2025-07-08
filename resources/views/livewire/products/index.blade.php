@@ -66,9 +66,10 @@ new class extends Component {
     }
 
     // Open product modal
-    public function openProductModal($id = null): void
+    public function openProductModal($id): void
     {
-        if ($id != 0) {
+        if ($id) {
+            // Load product details for editing
             $product = Product::findOrFail($id);
             $this->productId = $id;
             $this->name = $product->name;
@@ -202,7 +203,7 @@ new class extends Component {
         <!-- Add Product Button -->
         <flux:button 
             variant="primary" 
-            wire:click="openProductModal({{ 0 }})"
+            wire:click="openProductModal(null)"
         >
             Add New Product
         </flux:button>
@@ -293,7 +294,8 @@ new class extends Component {
 
     <!-- Products Table -->
     <div class="hidden lg:block bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -355,6 +357,7 @@ new class extends Component {
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Pagination -->
