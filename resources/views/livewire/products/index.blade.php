@@ -13,8 +13,10 @@ new class extends Component {
     // Product properties
     public $productId;
     public $name = '';
+    public $description = '';
     public $barcode = '';
     public $price = 0;
+    public $cost_price = 0;
     public $image;
     public $tempImageUrl;
     
@@ -35,8 +37,10 @@ new class extends Component {
     {
         return [
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
             'barcode' => 'required|string|max:50|unique:products,barcode,'.$this->productId,
             'price' => 'required|numeric|min:0',
+            'cost_price' => 'required|numeric|min:0',
             'image' => ['nullable', 'image', 'max:2048'],
         ];
     }
@@ -64,11 +68,16 @@ new class extends Component {
     // Open product modal
     public function openProductModal($id = null): void
     {
-        if ($id) {
+        if ($id != 0) {
             $product = Product::findOrFail($id);
             $this->productId = $id;
             $this->name = $product->name;
             $this->barcode = $product->barcode;
+            $this->description = $product->description;
+            $this->cost_price = $product->cost_price;
+            $this->image = null; // Reset image to avoid showing old image in the modal
+            $this->tempImageUrl = $product->image_path ? asset('storage/'.$product->image_path) : null;
+            // Ensure price is set correctly
             $this->price = $product->price;
             $this->tempImageUrl = $product->image_url;
         }
@@ -84,10 +93,17 @@ new class extends Component {
             'name' => $validated['name'],
             'barcode' => $validated['barcode'],
             'price' => $validated['price'],
+            'cost_price' => $validated['cost_price'],
+            'description' => $validated['description'],
+            'image_path' => null, // Default to null, will be set if image is uploaded  
         ];
         
         if ($this->image) {
             $productData['image_path'] = $this->image->store('products', 'public');
+            $this->tempImageUrl = asset('storage/'.$productData['image_path']);
+        } elseif ($this->tempImageUrl) {
+            // If image was previously set but not uploaded again, keep the old image path
+            $productData['image_path'] = str_replace(asset('storage/'), '', $this->tempImageUrl); 
         }
         
         if ($this->productId) {
@@ -186,7 +202,7 @@ new class extends Component {
         <!-- Add Product Button -->
         <flux:button 
             variant="primary" 
-            wire:click="openProductModal"
+            wire:click="openProductModal({{ 0 }})"
         >
             Add New Product
         </flux:button>
@@ -194,19 +210,24 @@ new class extends Component {
 
     <!-- Bulk Actions Bar -->
     @if(count($selectedProducts) > 0)
-    <div class="mb-4 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
-        <flux:text>
+    <div class="mb-4 p-3 bg-gray-50 rounded-lg flex flex-wrap items-center justify-between gap-2">
+        <flux:text class="whitespace-nowrap">
             {{ count($selectedProducts) }} selected
         </flux:text>
         
-        <div class="flex space-x-2">
+        <div class="flex flex-wrap gap-2">
             <flux:button 
-                variant="danger" 
+                variant="ghost" 
                 size="sm"
-                wire:click="$set('showBulkDeleteModal', true)"
+                wire:click="toggleSelectAll(false)"
             >
-                Delete Selected
+                Clear
             </flux:button>
+            <flux:modal.trigger name="bulk-delete-modal">
+                <flux:button variant="danger" size="sm">
+                    Delete Selected
+                </flux:button>
+            </flux:modal.trigger>
         </div>
     </div>
     @endif
@@ -220,9 +241,58 @@ new class extends Component {
             class="flex-1"
         />
     </div>
+    <!-- Mobile Card View (replaces table on small screens) -->
+    <div class="lg:hidden space-y-4">
+        @forelse($this->products as $product)
+        <div class="bg-white rounded-lg shadow p-4" wire:key="mobile-{{ $product->id }}">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-3">
+                    <flux:checkbox 
+                        value="{{ $product->id }}" 
+                        wire:model="selectedProducts"
+                        class="mt-1"
+                    />
+                    <div>
+                        <div class="font-medium">{{ $product->name }}</div>
+                        <div class="text-sm text-gray-500">{{ $product->barcode }}</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-medium">₦{{ number_format($product->price, 2) }}</div>
+                    @if($product->image_path)
+                    <img 
+                        src="{{ asset('storage/'.$product->image_path) }}" 
+                        alt="{{ $product->name }}" 
+                        class="h-8 w-8 rounded object-cover mt-1 ml-auto"
+                    >
+                    @endif
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-2 mt-3 pt-3 border-t">
+                <flux:button 
+                    size="sm" 
+                    variant="ghost"
+                    wire:click="openProductModal({{ $product->id }})"
+                >
+                    Edit
+                </flux:button>
+                <flux:modal.trigger name="delete-confirmation" wire:click="confirmDelete({{ $product->id }})">
+                    <flux:button size="sm" variant="danger">
+                        Delete
+                    </flux:button>
+                </flux:modal.trigger>
+            </div>
+        </div>
+        @empty
+        <div class="bg-white rounded-lg shadow p-4 text-center">
+            No products found
+        </div>
+        @endforelse
+    </div>
 
     <!-- Products Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="hidden lg:block bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -325,6 +395,24 @@ new class extends Component {
                         required
                     />
                     @error('barcode') <flux:text class="!text-red-500 mt-1">{{ $message }}</flux:text> @enderror
+                    <flux:input 
+                        wire:model="description" 
+                        label="Description" 
+                        placeholder="Enter product description"
+                        type="textarea"
+                        rows="3"
+                    />
+                    @error('description') <flux:text class="!text-red-500 mt-1">{{ $message }}</flux:text> @enderror
+                    <flux:input 
+                        wire:model="cost_price" 
+                        label="Cost Price" 
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        required
+                    />
+                    @error('cost_price') <flux:text class="!text-red-500 mt-1">{{ $message }}</flux:text> @enderror 
 
                     <flux:input 
                         wire:model="price" 
