@@ -10,7 +10,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['shop_id', 'product_id', 'quantity'];
+    protected $fillable = ['shop_id', 'product_id', 'quantity', 'alert_quantity'];
 
     public function shop(): BelongsTo
     {
