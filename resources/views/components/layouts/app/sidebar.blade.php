@@ -17,9 +17,19 @@
                         <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                             {{ __('Dashboard') }}
                         </flux:navlist.item>
+                        <flux:navlist.item icon="store" :href="route('shops.index')" :current="request()->routeIs('shops.*')" wire:navigate>
+                            {{ __('Shops') }}
+                        </flux:navlist.item>
+                        <flux:navlist.item icon="user" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
+                            {{ __('Users') }}
+                        </flux:navlist.item>
                         <flux:navlist.item icon="package" :href="route('products.index')" :current="request()->routeIs('products.*')" wire:navigate>
                             {{ __('Products') }}
                         </flux:navlist.item>
+                        <flux:navlist.item icon="warehouse" :href="route('stocks.index')" :current="request()->routeIs('stocks.*')" wire:navigate>
+                            {{ __('Stocks') }}
+                        </flux:navlist.item>
+                        
                         <!-- <flux:navlist.item icon="shopping-cart" :href="route('sales.index')" :current="request()->routeIs('sales.*')" wire:navigate>
                             {{ __('Sales') }}
                         </flux:navlist.item>

@@ -10,7 +10,7 @@ class Shop extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'location'];
+    protected $fillable = ['name', 'location','phone'];
 
     public function users(): HasMany
     {

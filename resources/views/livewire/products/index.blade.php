@@ -224,8 +224,10 @@ new class extends Component {
             >
                 Clear
             </flux:button>
-            <flux:modal.trigger name="bulk-delete-modal">
-                <flux:button variant="danger" size="sm">
+            <flux:modal.trigger name="showBulkDeleteModal">
+                <flux:button variant="danger" size="sm"
+                wire:click="$set('showBulkDeleteModal', true)"
+                >
                     Delete Selected
                 </flux:button>
             </flux:modal.trigger>
@@ -244,13 +246,28 @@ new class extends Component {
     </div>
     <!-- Mobile Card View (replaces table on small screens) -->
     <div class="lg:hidden space-y-4">
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-3">
+                    <flux:checkbox 
+                        wire:model.live="selectAll" 
+                        wire:change="toggleSelectAll($event.target.checked)"
+                    />
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="font-medium">Select All</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         @forelse($this->products as $product)
         <div class="bg-white rounded-lg shadow p-4" wire:key="mobile-{{ $product->id }}">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
                     <flux:checkbox 
                         value="{{ $product->id }}" 
-                        wire:model="selectedProducts"
+                        wire:model.live="selectedProducts"
                         class="mt-1"
                     />
                     <div>
