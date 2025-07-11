@@ -12,8 +12,17 @@ class Supply extends Model
 
     protected $fillable = [
         'supplier_id', 'product_id', 'shop_id',
-        'quantity', 'cost_price'
+        'quantity', 'cost_price', 'total_cost', 'supply_date'
     ];
+    protected function casts(): array
+    {
+        return [
+            'supply_date' => 'datetime',
+            'cost_price' => 'decimal:2',
+            'total_cost' => 'decimal:2',
+            'quantity' => 'integer',
+        ];
+    }
 
     public function supplier(): BelongsTo
     {

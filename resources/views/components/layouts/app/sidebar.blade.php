@@ -29,13 +29,16 @@
                         <flux:navlist.item icon="warehouse" :href="route('stocks.index')" :current="request()->routeIs('stocks.*')" wire:navigate>
                             {{ __('Stocks') }}
                         </flux:navlist.item>
+                        <flux:navlist.item icon="handshake" :href="route('suppliers.index')" :current="request()->routeIs('suppliers.*')" wire:navigate>
+                            {{ __('Suppliers') }}
+                        </flux:navlist.item>
                         
                         <!-- <flux:navlist.item icon="shopping-cart" :href="route('sales.index')" :current="request()->routeIs('sales.*')" wire:navigate>
                             {{ __('Sales') }}
-                        </flux:navlist.item>
+                        </flux:navlist.item> -->
                         <flux:navlist.item icon="truck" :href="route('supplies.index')" :current="request()->routeIs('supplies.*')" wire:navigate>
                             {{ __('Supplies') }}
-                        </flux:navlist.item> -->
+                        </flux:navlist.item>
                     </flux:navlist.group>
                 </flux:navlist.group>
             </flux:navlist>

@@ -13,6 +13,14 @@ class Product extends Model
     protected $fillable = [
     'name', 'barcode', 'price', 'cost_price', 'description', 'image_path'
 ];
+protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
+            'image_path' => 'string',
+        ];
+    }
 
     public function stocks(): HasMany
     {

@@ -255,7 +255,7 @@ new class extends Component {
                     />
                     <div class="flex items-start justify-between">
                         <div>
-                            <div class="font-medium">Select All</div>
+                            <div class="text-sm text-gray-500">Select All</div>
                         </div>
                     </div>
                 </div>
