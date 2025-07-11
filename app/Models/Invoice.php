@@ -14,7 +14,7 @@ class Invoice extends Model
     protected $fillable = [
         'shop_id', 'customer_id', 'invoice_number',
         'issue_date', 'due_date', 'total_amount',
-        'amount_paid', 'status', 'notes', 'synced'
+        'amount_paid', 'status'
     ];
 
     protected $casts = [

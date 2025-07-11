@@ -57,6 +57,7 @@ new class extends Component {
     // Open supplier modal
     public function openSupplierModal($id): void
     {
+        $this->resetForm();
         if ($id) {
             $supplier = Supplier::findOrFail($id);
             $this->supplierId = $id;

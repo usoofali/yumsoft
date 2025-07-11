@@ -23,6 +23,9 @@
                         <flux:navlist.item icon="user" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
                             {{ __('Users') }}
                         </flux:navlist.item>
+                        <flux:navlist.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>
+                            {{ __('Customers') }}
+                        </flux:navlist.item>
                         <flux:navlist.item icon="package" :href="route('products.index')" :current="request()->routeIs('products.*')" wire:navigate>
                             {{ __('Products') }}
                         </flux:navlist.item>

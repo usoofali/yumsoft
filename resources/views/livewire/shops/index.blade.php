@@ -58,6 +58,7 @@ new class extends Component {
     // Open shop modal
     public function openShopModal($id): void
     {
+        $this->resetForm();
         if ($id) {
             $shop = Shop::findOrFail($id);
             $this->shopId = $id;

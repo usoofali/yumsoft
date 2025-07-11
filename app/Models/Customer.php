@@ -16,6 +16,8 @@ class Customer extends Model
         'credit_limit', 'payment_terms'
     ];
 
+    
+
     public function shop(): BelongsTo
     {
         return $this->belongsTo(Shop::class);

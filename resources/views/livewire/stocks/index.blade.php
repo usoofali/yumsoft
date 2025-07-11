@@ -84,6 +84,7 @@ new class extends Component {
     // Open stock modal
     public function openStockModal($id = null): void
     {
+        $this->resetForm();
         if ($id) {
             $stock = Stock::findOrFail($id);
             $this->stockId = $id;

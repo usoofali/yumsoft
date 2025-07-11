@@ -68,6 +68,7 @@ new class extends Component {
     // Open product modal
     public function openProductModal($id): void
     {
+        $this->resetForm();
         if ($id) {
             // Load product details for editing
             $product = Product::findOrFail($id);

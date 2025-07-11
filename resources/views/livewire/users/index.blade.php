@@ -73,6 +73,7 @@ new class extends Component {
     // Open user modal
     public function openUserModal($id = null): void
     {
+        $this->resetForm();
         if ($id) {
             $user = User::findOrFail($id);
             $this->userId = $id;
